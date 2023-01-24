@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,44 +23,64 @@ class _HomePageState extends State<HomePage> {
   var animatePath = "assets/Rive/bear.riv";
 
   //* State Machine Input -> SMI Input bool to trigger actions
-  late SMITrigger fairTrigger, successTrigger;
+  SMIInput<bool>? trigSuccess;
+  SMIInput<bool>? trigFail;
 
   //* SMI Bool for eyes
-  late SMIBool stareEyes, closeEyes;
+  SMIInput<bool>? isChecking;
+  SMIInput<bool>? isHandsUp;
+
+  //* SMI for numbers of chars in textfield
+  SMIInput<double>? lookAtNumber;
 
   //* Art Board
   Artboard? artboard;
 
   //* State Machine Controller
-  late StateMachineController? stateMachineController;
+  late StateMachineController? controller;
+
+  //* function to login
+  loginFunction() {
+    if (emailController.text == 'admin' && passwordController.text == "admin") {
+      trigSuccess?.change(true);
+    } else {
+      trigFail?.change(true);
+    }
+  }
+
+  //* toggle obscure text
+  bool isObscureText = true;
+
+  //*
+  FocusNode emailFocusNode = FocusNode();
+  FocusNode passwordFocusNode = FocusNode();
 
   @override
   void initState() {
+    emailFocusNode.addListener(emailFocus);
+    passwordFocusNode.addListener(passwordFocus);
     super.initState();
-    initRiveArtBoard();
   }
 
-  initRiveArtBoard() {
-    rootBundle.load(animatePath).then((data) {
-      final file = RiveFile.import(data);
-      final art = file.mainArtboard;
+  @override
+  void dispose() {
+    emailFocusNode.removeListener(emailFocus);
+    passwordFocusNode.removeListener(passwordFocus);
+    super.dispose();
+  }
 
-      stateMachineController =
-          StateMachineController.fromArtboard(art, "Login");
+  void emailFocus() {
+    isChecking?.change(emailFocusNode.hasFocus);
+  }
 
-      if (stateMachineController != null) {
-        art.addController(stateMachineController!);
-      }
-
-      setState(() {
-        artboard = art;
-      });
-    });
+  void passwordFocus() {
+    isHandsUp?.change(passwordFocusNode.hasFocus);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       //* appbar
       backgroundColor: kPrimaryColor,
 
@@ -66,15 +88,6 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          //todo rive animation
-
-          if (artboard != null)
-            SizedBox(
-              width: 350,
-              height: 350,
-              child: Rive(artboard: artboard!),
-            ),
-
           Text(
             "LOGIN",
             style: GoogleFonts.poppins(
@@ -84,13 +97,40 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
+          //todo rive animation
+          SizedBox(
+            height: 300,
+            width: 300,
+            child: RiveAnimation.asset(
+              animatePath,
+              fit: BoxFit.contain,
+              stateMachines: const ["Login Machine"],
+              onInit: (artboard) {
+                controller = StateMachineController.fromArtboard(
+                  artboard,
+                  "Login Machine",
+                );
+
+                if (controller == null) return;
+
+                artboard.addController(controller!);
+
+                isChecking = controller?.findInput("isChecking");
+                lookAtNumber = controller?.findInput("numLook");
+                isHandsUp = controller?.findInput("isHandsUp");
+                trigFail = controller?.findInput("trigFail");
+                trigSuccess = controller?.findInput("trigSuccess");
+              },
+            ),
+          ),
+
           //todo login form
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 23.0),
+            padding: const EdgeInsets.only(left: 23.0, right: 23),
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.3,
+              height: MediaQuery.of(context).size.height * 0.35,
               decoration: BoxDecoration(
-                color: Colors.transparent,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: Colors.black,
@@ -103,26 +143,80 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     //* email
-                    MyTextField(
-                      controller: emailController,
-                      labelText: "Email",
-                      obscureText: false,
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {},
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        onChanged: ((value) => lookAtNumber?.change(
+                              value.length.toDouble(),
+                            )),
+                        focusNode: emailFocusNode,
+                        obscureText: false,
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          hintText: 'Email',
+                          hintStyle: GoogleFonts.poppins(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 2,
+                          ),
+                          suffixIcon: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.clear,
+                              color: Colors.black,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: kTextBgColor,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: const BorderSide(
+                              color: kSecondaryColor,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
 
                     //* password
-                    MyTextField(
-                      controller: passwordController,
-                      labelText: "Password",
-                      obscureText: true,
-                      suffixIcon: IconButton(
-                        icon: const Icon(
-                          Icons.visibility_off,
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        onChanged: ((value) {}),
+                        obscureText: isObscureText,
+                        controller: passwordController,
+                        focusNode: passwordFocusNode,
+                        decoration: InputDecoration(
+                          hintText: 'Password',
+                          hintStyle: GoogleFonts.poppins(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 2,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              isObscureText
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: Colors.black,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                isObscureText = !isObscureText;
+                              });
+                            },
+                          ),
+                          filled: true,
+                          fillColor: kTextBgColor,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: const BorderSide(
+                              color: kSecondaryColor,
+                            ),
+                          ),
                         ),
-                        onPressed: () {},
                       ),
                     ),
 
@@ -131,9 +225,9 @@ class _HomePageState extends State<HomePage> {
                     ),
 
                     //* login button
-                    ButtonTheme(
-                      minWidth: 80,
-                      height: 40,
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      height: MediaQuery.of(context).size.width * 0.13,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: kSecondaryColor,
@@ -141,7 +235,7 @@ class _HomePageState extends State<HomePage> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: loginFunction,
                         child: const Text(
                           "Login",
                           style: TextStyle(
