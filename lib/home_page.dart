@@ -104,6 +104,8 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          const Spacer(),
+
           Text(
             "LOGIN",
             style: GoogleFonts.poppins(
@@ -115,7 +117,7 @@ class _HomePageState extends State<HomePage> {
 
           //todo rive animation
           SizedBox(
-            height: 400,
+            height: 300,
             width: 400,
             child: RiveAnimation.asset(
               animatePath,
@@ -266,6 +268,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
+          const Spacer(),
         ],
       ),
     );
