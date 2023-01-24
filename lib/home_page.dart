@@ -104,7 +104,9 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Spacer(),
+          const SizedBox(
+            height: 150,
+          ),
 
           Text(
             "LOGIN",
