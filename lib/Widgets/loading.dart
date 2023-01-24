@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 void showLoadingDialog(BuildContext context) {
   showDialog(
     context: context,
-    barrierDismissible: false,
+    barrierDismissible: true,
     builder: (_) {
       return WillPopScope(
         onWillPop: () async => false,

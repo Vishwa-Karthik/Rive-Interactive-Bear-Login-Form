@@ -7,6 +7,8 @@ import 'package:interactive_ui/Utils/colors.dart';
 import 'package:interactive_ui/Widgets/myTextField.dart';
 import 'package:rive/rive.dart';
 
+import 'Widgets/loading.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -39,17 +41,8 @@ class _HomePageState extends State<HomePage> {
   //* State Machine Controller
   late StateMachineController? controller;
 
-  //* function to login
-  loginFunction() {
-    if (emailController.text == 'admin' && passwordController.text == "admin") {
-      trigSuccess?.change(true);
-    } else {
-      trigFail?.change(true);
-    }
-  }
-
   //* toggle obscure text
-  bool isObscureText = true;
+  bool isObscureText = false;
 
   //*
   FocusNode emailFocusNode = FocusNode();
@@ -77,6 +70,29 @@ class _HomePageState extends State<HomePage> {
     isHandsUp?.change(passwordFocusNode.hasFocus);
   }
 
+  //* function to login
+  loginFunction() async {
+    //* unfocus the textfield
+    emailFocusNode.unfocus();
+    passwordFocusNode.unfocus();
+
+    //* show loading screen
+    showLoadingDialog(context);
+
+    //* delay by 2s
+    await Future.delayed(
+      const Duration(milliseconds: 2000),
+    );
+    if (mounted) Navigator.pop(context);
+
+    //* check
+    if (emailController.text == 'admin' && passwordController.text == "admin") {
+      trigSuccess?.change(true);
+    } else {
+      trigFail?.change(true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,8 +115,8 @@ class _HomePageState extends State<HomePage> {
 
           //todo rive animation
           SizedBox(
-            height: 300,
-            width: 300,
+            height: 400,
+            width: 400,
             child: RiveAnimation.asset(
               animatePath,
               fit: BoxFit.contain,
