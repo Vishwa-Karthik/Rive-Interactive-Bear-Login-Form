@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.interactive_ui">
    <application
-        android:label="interactive_ui"
+        android:label="Rive UI"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
