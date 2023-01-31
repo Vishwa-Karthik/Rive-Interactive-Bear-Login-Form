@@ -1,16 +1,20 @@
-# interactive_ui
+# Interactive Login User Interface
 
-A new Flutter project.
+The infamous login interactive bear from Rive.
 
-## Getting Started
+## Getting started
+```bash
+flutter pub get
+```
 
-This project is a starting point for a Flutter application.
+## Results
+<p>
+<video  width=250 height=500 controls>
+<source src="./results/gif.mp4">
+</video>
+</p>
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## References
++ Google Fonts
++ Flutter Launcher Icons
++ Rive
