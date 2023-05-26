@@ -9,7 +9,7 @@ flutter pub get
 
 ## Results
 <p>
-<img src="results/giff.gif">
+<img src="results/result.gif">
 </p>
 
 ## References
