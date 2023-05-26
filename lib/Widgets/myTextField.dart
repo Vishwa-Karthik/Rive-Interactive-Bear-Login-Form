@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:interactive_ui/Utils/colors.dart';
 
-class MyTextField extends StatelessWidget {
+class MyTextField extends StatefulWidget {
   const MyTextField({
     super.key,
     required this.controller,
@@ -9,41 +10,64 @@ class MyTextField extends StatelessWidget {
     required this.obscureText,
     required this.suffixIcon,
     this.onTap,
+    this.focusNode,
     this.onChanged,
   });
 
   final TextEditingController controller;
+  final FocusNode? focusNode;
   final String labelText;
   final bool obscureText;
   final IconButton suffixIcon;
   final Function()? onTap;
-  final Function()? onChanged;
+  final ValueChanged<String>? onChanged;
+  //VoidCallback(String)? onChanged;
 
+  @override
+  State<MyTextField> createState() => _MyTextFieldState();
+}
+
+class _MyTextFieldState extends State<MyTextField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextField(
-        onTap: onTap,
-        //onChanged: onChanged,
-        obscureText: obscureText,
-        controller: controller,
-        decoration: InputDecoration(
-          suffixIcon: suffixIcon,
-          filled: true,
-          fillColor: kTextBgColor,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: const BorderSide(
-              color: kSecondaryColor,
+      padding: const EdgeInsets.all(4.0),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.05,
+        child: TextField(
+          focusNode: widget.focusNode,
+          onTap: widget.onTap,
+          onChanged: widget.onChanged,
+          obscureText: widget.obscureText,
+          controller: widget.controller,
+          decoration: InputDecoration(
+            suffixIcon: widget.suffixIcon,
+            hintText: widget.labelText,
+            hintStyle: GoogleFonts.poppins(
+              color: Colors.grey[600],
+              fontSize: 13,
             ),
-          ),
-          labelText: labelText,
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            letterSpacing: 3,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+            filled: true,
+            fillColor: AppColors.kWhiteColor,
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: AppColors.kBlackColor,
+                width: 2,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: AppColors.kBlackColor,
+              ),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: AppColors.kRedColor,
+              ),
+            ),
           ),
         ),
       ),

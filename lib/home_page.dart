@@ -95,173 +95,128 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      //* appbar
-      backgroundColor: kPrimaryColor,
-
       //* body
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(
-            height: 150,
-          ),
-
-          Text(
-            "LOGIN",
-            style: GoogleFonts.poppins(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 2,
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(
+              height: 20,
             ),
-          ),
 
-          //todo rive animation
-          SizedBox(
-            height: 300,
-            width: 400,
-            child: RiveAnimation.asset(
-              animatePath,
-              fit: BoxFit.contain,
-              stateMachines: const ["Login Machine"],
-              onInit: (artboard) {
-                controller = StateMachineController.fromArtboard(
-                  artboard,
-                  "Login Machine",
-                );
-
-                if (controller == null) return;
-
-                artboard.addController(controller!);
-
-                isChecking = controller?.findInput("isChecking");
-                lookAtNumber = controller?.findInput("numLook");
-                isHandsUp = controller?.findInput("isHandsUp");
-                trigFail = controller?.findInput("trigFail");
-                trigSuccess = controller?.findInput("trigSuccess");
-              },
+            Text(
+              "LOGIN",
+              style: GoogleFonts.poppins(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 5,
+              ),
             ),
-          ),
 
-          //todo login form
-          Padding(
-            padding: const EdgeInsets.only(left: 23.0, right: 23),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.35,
+            //todo rive animation
+            SizedBox(
+              height: screenHeight * 0.31,
+              width: screenWidth * 0.9,
+              child: RiveAnimation.asset(
+                animatePath,
+                fit: BoxFit.contain,
+                stateMachines: const ["Login Machine"],
+                onInit: (artboard) {
+                  controller = StateMachineController.fromArtboard(
+                    artboard,
+                    "Login Machine",
+                  );
+
+                  if (controller == null) return;
+
+                  artboard.addController(controller!);
+
+                  isChecking = controller?.findInput("isChecking");
+                  lookAtNumber = controller?.findInput("numLook");
+                  isHandsUp = controller?.findInput("isHandsUp");
+                  trigFail = controller?.findInput("trigFail");
+                  trigSuccess = controller?.findInput("trigSuccess");
+                },
+              ),
+            ),
+
+            //todo login form
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 25),
+              height: screenHeight * 0.25,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.kScaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: Colors.black,
-                  width: 2,
+                  color: Colors.white,
+                  width: 4,
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    //* email
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        onChanged: ((value) => lookAtNumber?.change(
-                              value.length.toDouble(),
-                            )),
-                        focusNode: emailFocusNode,
-                        obscureText: false,
-                        controller: emailController,
-                        decoration: InputDecoration(
-                          hintText: 'Email',
-                          hintStyle: GoogleFonts.poppins(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400,
-                            letterSpacing: 2,
-                          ),
-                          suffixIcon: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.clear,
-                              color: Colors.black,
-                            ),
-                          ),
-                          filled: true,
-                          fillColor: kTextBgColor,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: const BorderSide(
-                              color: kSecondaryColor,
-                            ),
-                          ),
-                        ),
+                    MyTextField(
+                      onChanged: (value) => lookAtNumber?.change(
+                        value.length.toDouble(),
                       ),
-                    ),
-
-                    //* password
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        onChanged: ((value) {}),
-                        obscureText: isObscureText,
-                        controller: passwordController,
-                        focusNode: passwordFocusNode,
-                        decoration: InputDecoration(
-                          hintText: 'Password',
-                          hintStyle: GoogleFonts.poppins(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400,
-                            letterSpacing: 2,
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              isObscureText
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                              color: Colors.black,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                isObscureText = !isObscureText;
-                              });
-                            },
-                          ),
-                          filled: true,
-                          fillColor: kTextBgColor,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: const BorderSide(
-                              color: kSecondaryColor,
-                            ),
-                          ),
-                        ),
+                      focusNode: emailFocusNode,
+                      controller: emailController,
+                      labelText: "Email",
+                      obscureText: false,
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.clear),
+                        iconSize: 20,
+                        onPressed: () => emailController.clear(),
                       ),
                     ),
 
                     const SizedBox(
-                      height: 20,
+                      height: 5,
+                    ),
+
+                    MyTextField(
+                      focusNode: passwordFocusNode,
+                      controller: passwordController,
+                      labelText: "Password",
+                      obscureText: isObscureText,
+                      suffixIcon: IconButton(
+                        icon: isObscureText
+                            ? const Icon(Icons.visibility_off)
+                            : const Icon(Icons.visibility),
+                        onPressed: () {
+                          setState(() {
+                            isObscureText = !isObscureText;
+                          });
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: 10,
                     ),
 
                     //* login button
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.7,
-                      height: MediaQuery.of(context).size.width * 0.13,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: kSecondaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: kSecondaryColor,
+                        elevation: 0,
+                        shadowColor: Colors.white12,
+                        minimumSize: Size(
+                          screenWidth * 0.4,
+                          screenHeight * 0.05,
                         ),
-                        onPressed: loginFunction,
-                        child: const Text(
-                          "Login",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                          ),
+                      ),
+                      onPressed: loginFunction,
+                      child: const Text(
+                        "Login",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -269,9 +224,9 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-          ),
-          const Spacer(),
-        ],
+            const Spacer(),
+          ],
+        ),
       ),
     );
   }
